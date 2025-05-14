@@ -23,7 +23,7 @@ public class Settings : MonoBehaviour
     public CashMoney moneyScript;
     public Toggle ballTrails;
     public bool ballTrailsOn;
-    public codes codeScript;
+    public Codes codeScript;
     public TMP_Text infoText;
     public TMP_Text buttonText;
     public Menu menu;
