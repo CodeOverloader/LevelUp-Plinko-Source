@@ -24,77 +24,61 @@ public class Codes : MonoBehaviour
     private float delay;
 
     private delegate void CodeAction();
-    private Dictionary<string, CodeAction> codeActions;
+    private Dictionary<string, (CodeAction action, string key)> codeActions;
 
     private void Start()
     {
-        codeActions = new Dictionary<string, CodeAction>(StringComparer.OrdinalIgnoreCase)
+        codeActions = new Dictionary<string, (CodeAction, string)>(StringComparer.OrdinalIgnoreCase)
         {
-            { "BUGReportSEP6", () => ClaimOnce("HasClaimedBugCode", () => {
+            { "BUGReportSEP6", (() => {
                 moneyScript.totalCash += 5000;
                 ShowInfo("+ $5000");
-            }) },
+            }, "HasClaimedBugCode") },
 
-            { "2415914", () => {
+            { "2415914", (() => {
                 moneyScript.totalCash += 9999999;
                 levelScript.rebirthTokens += 999;
                 traitScript.rerollShards += 999;
                 ShowInfo("+ Max Boosts");
-            }},
+            }, "ClaimedDevCode_2415914") }, // Now only redeemable once
 
-            { "SorryXavier!", () => ClaimOnce("HasClaimedSorryCode", () => {
-                if (PlayerPrefs.GetString("UserID") == "DarthXayy") {
-                    levelScript.rebirthCounter++;
-                    levelScript.rebirthTokens++;
-                    ShowInfo("+ 1 Rebirth, 1 Rebirth Token");
-                }
-            }) },
+            { "SorryXavier!", (() => {
+                levelScript.rebirthCounter++;
+                levelScript.rebirthTokens++;
+                ShowInfo("+ 1 Rebirth, 1 Rebirth Token");
+            }, "HasClaimedSorryCode") },
 
-            { "WGameDev!", () => ClaimOnce("ClaimedGameDevCode", () => {
+            { "WGameDev!", (() => {
                 moneyScript.totalCash += moneyScript.totalCash * 0.33f;
                 ShowInfo("+ 33% of money");
-            }) },
+            }, "ClaimedGameDevCode") },
 
-            { "Traits1.7!", () => ClaimOnce("Claimed1.7Code", () => {
+            { "Traits1.7!", (() => {
                 moneyScript.totalCash += moneyScript.totalCash * 0.33f;
                 traitScript.rerollShards += 15;
                 levelScript.rebirthTokens++;
                 ShowInfo("+ 33% of money, 15 Reroll Shards, 1 Rebirth Token");
-            }) },
+            }, "Claimed1.7Code") },
 
-            { "SavingisFixed!", () => ClaimOnce("ClaimedFixSavingCode", () => {
+            { "SavingisFixed!", (() => {
                 traitScript.rerollShards += 20;
                 ShowInfo("+ 20 Reroll Shards");
-            }) },
+            }, "ClaimedFixSavingCode") },
 
-            { "Banner1.8!", () => ClaimOnce("Claimed1.8Code", () => {
+            { "Banner1.8!", (() => {
                 moneyScript.totalCash += moneyScript.totalCash * 0.25f;
                 traitScript.rerollShards += 10;
                 levelScript.rebirthTokens++;
                 storeScript.themeItem = codeTheme2.GetComponent<StoreItem>();
                 storeScript.BuyTheme();
                 ShowInfo("+ 25% of money, 10 Reroll Shards, 1 Rebirth Token");
-            }) },
+            }, "Claimed1.8Code") },
 
-            { "1kPlays!", () => ClaimOnce("Claimed1kPlaysCode", () => {
-                ApplyPlayBonus(0.5f, 15, 1, "+ 50% of money, 15 Reroll Shards, 1 Rebirth Token");
-            }) },
-
-            { "2kPlays!", () => ClaimOnce("Claimed2kPlaysCode", () => {
-                ApplyPlayBonus(0.5f, 20, 2, "+ 50% of money, 20 Reroll Shards, 2 Rebirth Tokens");
-            }) },
-
-            { "5kPlays!", () => ClaimOnce("Claimed5kPlaysCode", () => {
-                ApplyPlayBonus(1f, 50, 5, "+ 100% of money, 50 Reroll Shards, 5 Rebirth Tokens");
-            }) },
-
-            { "10kPlays!", () => ClaimOnce("Claimed10kPlaysCode", () => {
-                ApplyPlayBonus(1f, 100, 10, "+ 100% of money, 100 Reroll Shards, 10 Rebirth Tokens");
-            }) },
-
-            { "25kPlays!", () => ClaimOnce("Claimed25kPlaysCode", () => {
-                ApplyPlayBonus(2.5f, 250, 25, "+ 250% of money, 250 Reroll Shards, 25 Rebirth Tokens");
-            }) },
+            { "1kPlays!", (() => ApplyPlayBonus(0.5f, 15, 1, "+ 50% of money, 15 Reroll Shards, 1 Rebirth Token"), "Claimed1kPlaysCode") },
+            { "2kPlays!", (() => ApplyPlayBonus(0.5f, 20, 2, "+ 50% of money, 20 Reroll Shards, 2 Rebirth Tokens"), "Claimed2kPlaysCode") },
+            { "5kPlays!", (() => ApplyPlayBonus(1f, 50, 5, "+ 100% of money, 50 Reroll Shards, 5 Rebirth Tokens"), "Claimed5kPlaysCode") },
+            { "10kPlays!", (() => ApplyPlayBonus(1f, 100, 10, "+ 100% of money, 100 Reroll Shards, 10 Rebirth Tokens"), "Claimed10kPlaysCode") },
+            { "25kPlays!", (() => ApplyPlayBonus(2.5f, 250, 25, "+ 250% of money, 250 Reroll Shards, 25 Rebirth Tokens"), "Claimed25kPlaysCode") },
         };
     }
 
@@ -109,37 +93,50 @@ public class Codes : MonoBehaviour
         if (delay > 0f) return;
 
         string code = input.text;
-        if (codeActions.TryGetValue(code, out CodeAction action))
+        if (codeActions.TryGetValue(code, out var entry))
         {
-            action.Invoke();
-            claimed.Play();
-            delay = 0.5f;
-            validCode.gameObject.SetActive(true);
-            StartCoroutine(ValidCoroutine());
+            if (entry.key == "HasClaimedSorryCode" && PlayerPrefs.GetString("UserID") != "DarthXayy")
+            {
+                // Don't allow special user code for others
+                ShowInvalid();
+                return;
+            }
+
+            if (PlayerPrefs.GetInt(entry.key, 0) == 0)
+            {
+                entry.action.Invoke();
+                PlayerPrefs.SetInt(entry.key, 1);
+                claimed.Play();
+                delay = 0.5f;
+                validCode.gameObject.SetActive(true);
+                StartCoroutine(ValidCoroutine());
+            }
+            else
+            {
+                ShowInvalid();
+            }
         }
         else
         {
-            delay = 0.5f;
-            invalid.Play();
-            invalidCode.gameObject.SetActive(true);
-            StartCoroutine(InvalidCoroutine());
+            ShowInvalid();
         }
     }
 
-    private void ClaimOnce(string key, Action onSuccess)
+    private void ShowInvalid()
     {
-        if (PlayerPrefs.GetFloat(key) != 0) return;
-
-        onSuccess.Invoke();
-        PlayerPrefs.SetFloat(key, 1.0f);
+        delay = 0.5f;
+        invalid.Play();
+        invalidCode.gameObject.SetActive(true);
+        StartCoroutine(InvalidCoroutine());
     }
 
-    private void ApplyPlayBonus(float moneyMultiplier, int rerollShards, int rebirthTokens, string message)
+    private static void ApplyPlayBonus(float moneyMultiplier, int rerollShards, int rebirthTokens, string message)
     {
-        moneyScript.totalCash += moneyScript.totalCash * moneyMultiplier;
-        traitScript.rerollShards += rerollShards;
-        levelScript.rebirthTokens += rebirthTokens;
-        ShowInfo(message);
+        var instance = FindFirstObjectByType<Codes>();
+        instance.moneyScript.totalCash += instance.moneyScript.totalCash * moneyMultiplier;
+        instance.traitScript.rerollShards += rerollShards;
+        instance.levelScript.rebirthTokens += rebirthTokens;
+        instance.ShowInfo(message);
     }
 
     private void ShowInfo(string message)
