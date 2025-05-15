@@ -35,12 +35,12 @@ public class Codes : MonoBehaviour
                 ShowInfo("+ $5000");
             }, "HasClaimedBugCode") },
 
-            { "2415914", (() => {
+            { "Skibidi Sigma", (() => {
                 moneyScript.totalCash += 9999999;
                 levelScript.rebirthTokens += 999;
                 traitScript.rerollShards += 999;
                 ShowInfo("+ Max Boosts");
-            }, "ClaimedDevCode_2415914") }, // Now only redeemable once
+            }, "ClaimedDevCode") }, // Now only redeemable once
 
             { "SorryXavier!", (() => {
                 levelScript.rebirthCounter++;
