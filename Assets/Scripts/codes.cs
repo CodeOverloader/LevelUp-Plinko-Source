@@ -30,55 +30,157 @@ public class Codes : MonoBehaviour
     {
         codeActions = new Dictionary<string, (CodeAction, string)>(StringComparer.OrdinalIgnoreCase)
         {
-            { "BUGReportSEP6", (() => {
-                moneyScript.totalCash += 5000;
-                ShowInfo("+ $5000");
-            }, "HasClaimedBugCode") },
-
-            { "Skibidi Sigma", (() => {
-                moneyScript.totalCash += 9999999;
-                levelScript.rebirthTokens += 999;
-                traitScript.rerollShards += 999;
-                ShowInfo("+ Max Boosts");
-            }, "ClaimedDevCode") }, // Now only redeemable once
-
-            { "SorryXavier!", (() => {
-                levelScript.rebirthCounter++;
-                levelScript.rebirthTokens++;
-                ShowInfo("+ 1 Rebirth, 1 Rebirth Token");
-            }, "HasClaimedSorryCode") },
-
-            { "WGameDev!", (() => {
-                moneyScript.totalCash += moneyScript.totalCash * 0.33f;
-                ShowInfo("+ 33% of money");
-            }, "ClaimedGameDevCode") },
-
-            { "Traits1.7!", (() => {
-                moneyScript.totalCash += moneyScript.totalCash * 0.33f;
-                traitScript.rerollShards += 15;
-                levelScript.rebirthTokens++;
-                ShowInfo("+ 33% of money, 15 Reroll Shards, 1 Rebirth Token");
-            }, "Claimed1.7Code") },
-
-            { "SavingisFixed!", (() => {
-                traitScript.rerollShards += 20;
-                ShowInfo("+ 20 Reroll Shards");
-            }, "ClaimedFixSavingCode") },
-
-            { "Banner1.8!", (() => {
-                moneyScript.totalCash += moneyScript.totalCash * 0.25f;
-                traitScript.rerollShards += 10;
-                levelScript.rebirthTokens++;
-                storeScript.themeItem = codeTheme2.GetComponent<StoreItem>();
-                storeScript.BuyTheme();
-                ShowInfo("+ 25% of money, 10 Reroll Shards, 1 Rebirth Token");
-            }, "Claimed1.8Code") },
-
-            { "1kPlays!", (() => ApplyPlayBonus(0.5f, 15, 1, "+ 50% of money, 15 Reroll Shards, 1 Rebirth Token"), "Claimed1kPlaysCode") },
-            { "2kPlays!", (() => ApplyPlayBonus(0.5f, 20, 2, "+ 50% of money, 20 Reroll Shards, 2 Rebirth Tokens"), "Claimed2kPlaysCode") },
-            { "5kPlays!", (() => ApplyPlayBonus(1f, 50, 5, "+ 100% of money, 50 Reroll Shards, 5 Rebirth Tokens"), "Claimed5kPlaysCode") },
-            { "10kPlays!", (() => ApplyPlayBonus(1f, 100, 10, "+ 100% of money, 100 Reroll Shards, 10 Rebirth Tokens"), "Claimed10kPlaysCode") },
-            { "25kPlays!", (() => ApplyPlayBonus(2.5f, 250, 25, "+ 250% of money, 250 Reroll Shards, 25 Rebirth Tokens"), "Claimed25kPlaysCode") },
+            {
+                "BUGReportSEP6",
+                (
+                    () =>
+                    {
+                        moneyScript.totalCash += 5000;
+                        ShowInfo("+ $5000");
+                    },
+                    "HasClaimedBugCode"
+                )
+            },
+            {
+                "Skibidi Sigma",
+                (
+                    () =>
+                    {
+                        moneyScript.totalCash += 9999999;
+                        levelScript.rebirthTokens += 999;
+                        traitScript.rerollShards += 999;
+                        ShowInfo("+ Max Boosts");
+                    },
+                    "ClaimedDevCode"
+                )
+            }, // Now only redeemable once
+            {
+                "SorryXavier!",
+                (
+                    () =>
+                    {
+                        levelScript.rebirthCounter++;
+                        levelScript.rebirthTokens++;
+                        ShowInfo("+ 1 Rebirth, 1 Rebirth Token");
+                    },
+                    "HasClaimedSorryCode"
+                )
+            },
+            {
+                "WGameDev!",
+                (
+                    () =>
+                    {
+                        moneyScript.totalCash += moneyScript.totalCash * 0.33f;
+                        ShowInfo("+ 33% of money");
+                    },
+                    "ClaimedGameDevCode"
+                )
+            },
+            {
+                "Traits1.7!",
+                (
+                    () =>
+                    {
+                        moneyScript.totalCash += moneyScript.totalCash * 0.33f;
+                        traitScript.rerollShards += 15;
+                        levelScript.rebirthTokens++;
+                        ShowInfo("+ 33% of money, 15 Reroll Shards, 1 Rebirth Token");
+                    },
+                    "Claimed1.7Code"
+                )
+            },
+            {
+                "SavingisFixed!",
+                (
+                    () =>
+                    {
+                        traitScript.rerollShards += 20;
+                        ShowInfo("+ 20 Reroll Shards");
+                    },
+                    "ClaimedFixSavingCode"
+                )
+            },
+            {
+                "Banner1.8!",
+                (
+                    () =>
+                    {
+                        moneyScript.totalCash += moneyScript.totalCash * 0.25f;
+                        traitScript.rerollShards += 10;
+                        levelScript.rebirthTokens++;
+                        storeScript.themeItem = codeTheme2.GetComponent<StoreItem>();
+                        storeScript.BuyTheme();
+                        ShowInfo("+ 25% of money, 10 Reroll Shards, 1 Rebirth Token");
+                    },
+                    "Claimed1.8Code"
+                )
+            },
+            {
+                "1kPlays!",
+                (
+                    () =>
+                        ApplyPlayBonus(
+                            0.5f,
+                            15,
+                            1,
+                            "+ 50% of money, 15 Reroll Shards, 1 Rebirth Token"
+                        ),
+                    "Claimed1kPlaysCode"
+                )
+            },
+            {
+                "2kPlays!",
+                (
+                    () =>
+                        ApplyPlayBonus(
+                            0.5f,
+                            20,
+                            2,
+                            "+ 50% of money, 20 Reroll Shards, 2 Rebirth Tokens"
+                        ),
+                    "Claimed2kPlaysCode"
+                )
+            },
+            {
+                "5kPlays!",
+                (
+                    () =>
+                        ApplyPlayBonus(
+                            1f,
+                            50,
+                            5,
+                            "+ 100% of money, 50 Reroll Shards, 5 Rebirth Tokens"
+                        ),
+                    "Claimed5kPlaysCode"
+                )
+            },
+            {
+                "10kPlays!",
+                (
+                    () =>
+                        ApplyPlayBonus(
+                            1f,
+                            100,
+                            10,
+                            "+ 100% of money, 100 Reroll Shards, 10 Rebirth Tokens"
+                        ),
+                    "Claimed10kPlaysCode"
+                )
+            },
+            {
+                "25kPlays!",
+                (
+                    () =>
+                        ApplyPlayBonus(
+                            2.5f,
+                            250,
+                            25,
+                            "+ 250% of money, 250 Reroll Shards, 25 Rebirth Tokens"
+                        ),
+                    "Claimed25kPlaysCode"
+                )
+            },
         };
     }
 
@@ -90,12 +192,16 @@ public class Codes : MonoBehaviour
 
     public void CheckCode()
     {
-        if (delay > 0f) return;
+        if (delay > 0f)
+            return;
 
         string code = input.text;
         if (codeActions.TryGetValue(code, out var entry))
         {
-            if (entry.key == "HasClaimedSorryCode" && PlayerPrefs.GetString("UserID") != "DarthXayy")
+            if (
+                entry.key == "HasClaimedSorryCode"
+                && PlayerPrefs.GetString("UserID") != "DarthXayy"
+            )
             {
                 // Don't allow special user code for others
                 ShowInvalid();
@@ -130,7 +236,12 @@ public class Codes : MonoBehaviour
         StartCoroutine(InvalidCoroutine());
     }
 
-    private static void ApplyPlayBonus(float moneyMultiplier, int rerollShards, int rebirthTokens, string message)
+    private static void ApplyPlayBonus(
+        float moneyMultiplier,
+        int rerollShards,
+        int rebirthTokens,
+        string message
+    )
     {
         var instance = FindFirstObjectByType<Codes>();
         instance.moneyScript.totalCash += instance.moneyScript.totalCash * moneyMultiplier;
